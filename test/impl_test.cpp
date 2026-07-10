@@ -5,4 +5,5 @@
 // are included here, signaling they should only include the fs_fwd.hpp)
 #include <ghc/fs_impl.hpp>
 #define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_NO_COUNTER
 #include "catch.hpp"

@@ -82,6 +82,7 @@ using fstream = ghc::filesystem::fstream;
 #ifndef GHC_FILESYSTEM_FWD_TEST
 #define CATCH_CONFIG_MAIN
 #endif
+#define CATCH_CONFIG_NO_COUNTER
 #include "catch.hpp"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -22,6 +22,7 @@
 //
 //---------------------------------------------------------------------------------------
 #define CATCH_CONFIG_MAIN
+#define CATCH_CONFIG_NO_COUNTER
 #include "catch.hpp"
 
 #include <ghc/filesystem.hpp>
