@@ -99,7 +99,8 @@ add_test(fwd_impl_test fwd_impl_test)
 
 add_executable(exception exception.cpp)
 if(MSVC)
-    target_compile_options(exception PRIVATE /EHs-c-)
+    # MSVC 2015 warns for noexcept declarations when exception handling is disabled.
+    target_compile_options(exception PRIVATE /EHs-c- /wd4577)
     target_compile_definitions(exception PRIVATE _HAS_EXCEPTIONS=0)
 else()
     target_compile_options(exception PRIVATE -fno-exceptions)
