@@ -56,11 +56,12 @@ jobs:
             cc: gcc-11
             cxx: g++-11
 
-          - name: "Windows MSVC 2019"
-            os: windows-2019
+          - name: "Windows MSVC v142 (VS 2019 toolset)"
+            os: windows-2022
             build_type: Release
             packages: ninja
-            generator: "Visual Studio 16 2019"
+            generator: "Visual Studio 17 2022"
+            toolset: v142
             compatibility: "cxx_std_11;cxx_std_17;cxx_std_20"
             cc: cl
             cxx: cl
@@ -125,14 +126,18 @@ jobs:
         run: |
           export CC=${{ matrix.config.cc }}
           export CXX=${{ matrix.config.cxx }}
+          toolset_args=()
+          if [[ -n "${{ matrix.config.toolset }}" ]]; then
+            toolset_args=(-T "${{ matrix.config.toolset }}")
+          fi
           ninja --version
           cmake --version
           mkdir build
           mkdir install
           if [[ "${{ matrix.config.build_type }}" == "Debug" ]]; then
-            cmake -G "${{ matrix.config.generator }}" -S . -B build -DCMAKE_BUILD_TYPE=Debug -DGHC_COVERAGE=ON -DGHC_FILESYSTEM_TEST_COMPILE_FEATURES="${{ matrix.config.compatibility }}" -DCMAKE_INSTALL_PREFIX:PATH=install
+            cmake -G "${{ matrix.config.generator }}" "${toolset_args[@]}" -S . -B build -DCMAKE_BUILD_TYPE=Debug -DGHC_COVERAGE=ON -DGHC_FILESYSTEM_TEST_COMPILE_FEATURES="${{ matrix.config.compatibility }}" -DCMAKE_INSTALL_PREFIX:PATH=install
           else
-            cmake -G "${{ matrix.config.generator }}" -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DGHC_FILESYSTEM_TEST_COMPILE_FEATURES="${{ matrix.config.compatibility }}" -DCMAKE_INSTALL_PREFIX:PATH=install
+            cmake -G "${{ matrix.config.generator }}" "${toolset_args[@]}" -S . -B build -DCMAKE_BUILD_TYPE=${{ matrix.config.build_type }} -DGHC_FILESYSTEM_TEST_COMPILE_FEATURES="${{ matrix.config.compatibility }}" -DCMAKE_INSTALL_PREFIX:PATH=install
           fi
 
       - name: Build project

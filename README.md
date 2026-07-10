@@ -651,6 +651,11 @@ to the expected behavior.
 * Fix for [#166](https://github.com/gulrak/filesystem/issues/166),
   `extension()` did return non empty result for the directory name
   `".."`
+* Fix for [#203](https://github.com/gulrak/filesystem/issues/203), directory
+  iteration and `proximate()` are available in builds without exception
+  support, with iteration errors terminating the process.
+* Updated CI for current GitHub runners and compiler toolchains, retaining
+  MSVC v142 coverage.
 
 ###  [v1.5.14](https://github.com/gulrak/filesystem/releases/tag/v1.5.14)
 
@@ -1176,4 +1181,3 @@ to the expected behavior.
 
 This was the first public release version. It implements the full range of
 C++17 `std::filesystem`, as far as possible without other C++17 dependencies.
-
