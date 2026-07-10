@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.7.2)
-project(
-   ghcfilesystem,
-   VERSION 1.5.15
-)
+project(ghcfilesystem VERSION 1.5.15)
 
 if (POLICY CMP0077)
     cmake_policy(SET CMP0077 NEW)

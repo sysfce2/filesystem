@@ -181,6 +181,7 @@
 #include <clocale>
 #include <cstdlib>
 #include <cstring>
+#include <exception>
 #include <fstream>
 #include <functional>
 #include <memory>
@@ -932,20 +933,16 @@ public:
     directory_iterator& operator=(directory_iterator&& rhs) noexcept;
     const directory_entry& operator*() const;
     const directory_entry* operator->() const;
-#ifdef GHC_WITH_EXCEPTIONS
     directory_iterator& operator++();
-#endif
     directory_iterator& increment(std::error_code& ec) noexcept;
 
     // other members as required by [input.iterators]
-#ifdef GHC_WITH_EXCEPTIONS
     proxy operator++(int)
     {
         proxy p{**this};
         ++*this;
         return p;
     }
-#endif
     bool operator==(const directory_iterator& rhs) const;
     bool operator!=(const directory_iterator& rhs) const;
 
@@ -992,9 +989,7 @@ public:
     // [fs.rec.dir.itr.members] modifiers recursive_directory_iterator&
     recursive_directory_iterator& operator=(const recursive_directory_iterator& rhs);
     recursive_directory_iterator& operator=(recursive_directory_iterator&& rhs) noexcept;
-#ifdef GHC_WITH_EXCEPTIONS
     recursive_directory_iterator& operator++();
-#endif
     recursive_directory_iterator& increment(std::error_code& ec) noexcept;
 
 #ifdef GHC_WITH_EXCEPTIONS
@@ -1004,14 +999,12 @@ public:
     void disable_recursion_pending();
 
     // other members as required by [input.iterators]
-#ifdef GHC_WITH_EXCEPTIONS
     directory_iterator::proxy operator++(int)
     {
         directory_iterator::proxy proxy{**this};
         ++*this;
         return proxy;
     }
-#endif
     bool operator==(const recursive_directory_iterator& rhs) const;
     bool operator!=(const recursive_directory_iterator& rhs) const;
 
@@ -4751,7 +4744,6 @@ GHC_INLINE void permissions(const path& p, perms prms, perm_options opts, std::e
 #endif
 }
 
-#ifdef GHC_WITH_EXCEPTIONS
 GHC_INLINE path proximate(const path& p, std::error_code& ec)
 {
     auto cp = current_path(ec);
@@ -4760,7 +4752,6 @@ GHC_INLINE path proximate(const path& p, std::error_code& ec)
     }
     return path();
 }
-#endif
 
 #ifdef GHC_WITH_EXCEPTIONS
 GHC_INLINE path proximate(const path& p, const path& base)
@@ -5860,17 +5851,19 @@ GHC_INLINE const directory_entry* directory_iterator::operator->() const
     return &_impl->_dir_entry;
 }
 
-#ifdef GHC_WITH_EXCEPTIONS
 GHC_INLINE directory_iterator& directory_iterator::operator++()
 {
     std::error_code ec;
     _impl->increment(ec);
     if (ec) {
+#ifdef GHC_WITH_EXCEPTIONS
         throw filesystem_error(detail::systemErrorText(ec.value()), _impl->_dir_entry._path, ec);
+#else
+        std::terminate();
+#endif
     }
     return *this;
 }
-#endif
 
 GHC_INLINE directory_iterator& directory_iterator::increment(std::error_code& ec) noexcept
 {
@@ -5986,17 +5979,19 @@ GHC_INLINE recursive_directory_iterator& recursive_directory_iterator::operator=
     return *this;
 }
 
-#ifdef GHC_WITH_EXCEPTIONS
 GHC_INLINE recursive_directory_iterator& recursive_directory_iterator::operator++()
 {
     std::error_code ec;
     increment(ec);
     if (ec) {
+#ifdef GHC_WITH_EXCEPTIONS
         throw filesystem_error(detail::systemErrorText(ec.value()), _impl->_dir_iter_stack.empty() ? path() : _impl->_dir_iter_stack.top()->path(), ec);
+#else
+        std::terminate();
+#endif
     }
     return *this;
 }
-#endif
 
 GHC_INLINE recursive_directory_iterator& recursive_directory_iterator::increment(std::error_code& ec) noexcept
 {
