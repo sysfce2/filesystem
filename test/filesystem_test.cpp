@@ -490,6 +490,14 @@ TEST_CASE("fs.path.append - path appends", "[filesystem][path][fs.path.append]")
     CHECK(fs::path("c:") / "" == "c:");
     CHECK(fs::path("c:foo") / "/bar" == "c:/bar");
     CHECK(fs::path("c:foo") / "c:bar" == "c:foo/bar");
+    CHECK(fs::path(R"(\\server)") / "abc" == R"(\\server\abc)");
+    CHECK(fs::path(R"(\\server)") / "" == R"(\\server\)");
+    CHECK(fs::path(R"(\\server\)") / "abc" == R"(\\server\abc)");
+    CHECK(fs::path(R"(\\server\share)") / "abc" == R"(\\server\share\abc)");
+    CHECK(fs::path(R"(\\server)") / R"(\abc)" == R"(\\server\abc)");
+    CHECK(fs::path("c:") / "abc" == "c:abc");
+    CHECK(fs::path(R"(c:\)") / "abc" == R"(c:\abc)");
+    CHECK(fs::path(R"(\rooted)") / "abc" == R"(\rooted\abc)");
 #else
     CHECK(fs::path("foo") / "" == "foo/");
     CHECK(fs::path("foo") / "/bar" == "/bar");

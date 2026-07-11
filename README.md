@@ -651,6 +651,8 @@ to the expected behavior.
 * Fix for [#203](https://github.com/gulrak/filesystem/issues/203), directory
   iteration and `proximate()` are available in builds without exception
   support, with iteration errors terminating the process.
+* Fix for [#191](https://github.com/gulrak/filesystem/issues/191), appending
+  to a host-only UNC path now inserts the missing separator.
 * Fix for [#185](https://github.com/gulrak/filesystem/issues/185),
   `lexically_normal()` now preserves unresolved parent components in relative
   paths.

@@ -2623,10 +2623,16 @@ GHC_INLINE path& path::operator/=(const path& p)
         assign(p);
         return *this;
     }
+    bool isHostOnlyUncPath = false;
+#ifdef GHC_OS_WINDOWS
+    const auto rootNameLength = root_name_length();
+    isHostOnlyUncPath = rootNameLength == _path.length() && rootNameLength > _prefixLength + 2 &&
+        _path[_prefixLength] == preferred_separator && _path[_prefixLength + 1] == preferred_separator;
+#endif
     if (p.has_root_directory()) {
         assign(root_name());
     }
-    else if ((!has_root_directory() && is_absolute()) || has_filename()) {
+    else if ((!has_root_directory() && is_absolute()) || has_filename() || isHostOnlyUncPath) {
         _path += preferred_separator;
     }
     auto iter = p.begin();
