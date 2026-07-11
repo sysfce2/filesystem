@@ -648,14 +648,37 @@ to the expected behavior.
 
 ### v1.5.15 (wip)
 
-* Fix for [#166](https://github.com/gulrak/filesystem/issues/166),
-  `extension()` did return non empty result for the directory name
-  `".."`
 * Fix for [#203](https://github.com/gulrak/filesystem/issues/203), directory
   iteration and `proximate()` are available in builds without exception
   support, with iteration errors terminating the process.
-* Updated CI for current GitHub runners and compiler toolchains, retaining
-  MSVC v142 coverage.
+* Pull requests [#198](https://github.com/gulrak/filesystem/pull/198) and
+  [#199](https://github.com/gulrak/filesystem/pull/199), updated CI for current
+  runners and compiler toolchains, retaining legacy compiler and MSVC v142
+  coverage and adding MSYS2 GCC and Clang builds, fixing
+  [#189](https://github.com/gulrak/filesystem/issues/189).
+* Pull requests [#177](https://github.com/gulrak/filesystem/pull/177) and
+  [#197](https://github.com/gulrak/filesystem/pull/197), fixed `EINTR` retry
+  handling in POSIX `read()`, `opendir()` and `readdir()` loops.
+* Avoided unnecessary temporary string creation during Windows directory
+  iteration.
+* Pull request [#190](https://github.com/gulrak/filesystem/pull/190), fixed
+  preprocessor checks for builds using `-Wundef`.
+* Pull request [#188](https://github.com/gulrak/filesystem/pull/188), replaced
+  use of the GNU `getcwd(NULL, 0)` extension.
+* Pull request [#179](https://github.com/gulrak/filesystem/pull/179), fixed
+  `lexically_relative()` when the normalized base equals the target.
+* Pull request [#176](https://github.com/gulrak/filesystem/pull/176), documented
+  the external Bazel rules.
+* Pull request [#174](https://github.com/gulrak/filesystem/pull/174), CMake no
+  longer prints diagnostic messages when used as a subproject.
+* Pull request [#172](https://github.com/gulrak/filesystem/pull/172), allowed
+  wide-path file streams with recent libstdc++ versions on Windows.
+* Pull request [#167](https://github.com/gulrak/filesystem/pull/167), improved
+  dynamic selection and deployment target handling across Apple platforms,
+  fixing [#168](https://github.com/gulrak/filesystem/issues/168).
+* Fix for [#166](https://github.com/gulrak/filesystem/issues/166),
+  `extension()` did return non empty result for the directory name
+  `".."`.
 
 ###  [v1.5.14](https://github.com/gulrak/filesystem/releases/tag/v1.5.14)
 
