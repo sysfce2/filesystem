@@ -651,6 +651,9 @@ to the expected behavior.
 * Fix for [#203](https://github.com/gulrak/filesystem/issues/203), directory
   iteration and `proximate()` are available in builds without exception
   support, with iteration errors terminating the process.
+* Fix for [#185](https://github.com/gulrak/filesystem/issues/185),
+  `lexically_normal()` now preserves unresolved parent components in relative
+  paths.
 * Pull requests [#198](https://github.com/gulrak/filesystem/pull/198) and
   [#199](https://github.com/gulrak/filesystem/pull/199), updated CI for current
   runners and compiler toolchains, retaining legacy compiler and MSVC v142

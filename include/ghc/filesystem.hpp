@@ -3269,12 +3269,18 @@ GHC_INLINE path path::lexically_normal() const
             if (dest == root) {
                 continue;
             }
-            else if (*(--dest.end()) != "..") {
-                if (dest._path.back() == preferred_separator) {
-                    dest._path.pop_back();
+            else {
+                auto last = --dest.end();
+                if (last->empty() && last != dest.begin()) {
+                    --last;
                 }
-                dest.remove_filename();
-                continue;
+                if (!last->empty() && *last != "..") {
+                    if (dest._path.back() == preferred_separator) {
+                        dest._path.pop_back();
+                    }
+                    dest.remove_filename();
+                    continue;
+                }
             }
         }
         if (!(s.empty() && lastDotDot)) {
