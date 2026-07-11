@@ -3753,6 +3753,19 @@ GHC_INLINE path canonical(const path& p, std::error_code& ec)
         return path();
     }
     path work = p.is_absolute() ? p : absolute(p, ec);
+#ifdef GHC_OS_WINDOWS
+    const path::impl_string_type deviceUncPrefix(GHC_PLATFORM_LITERAL("\\\\.\\UNC\\"));
+    const path::impl_string_type extendedUncPrefix(GHC_PLATFORM_LITERAL("\\\\?\\UNC\\"));
+    auto hasPrefix = [&work](const path::impl_string_type& prefix) {
+        return work._path.length() > prefix.length() &&
+            std::equal(prefix.begin(), prefix.end(), work._path.begin(), [](path::value_type lhs, path::value_type rhs) {
+                return std::toupper(static_cast<unsigned char>(lhs)) == std::toupper(static_cast<unsigned char>(rhs));
+            });
+    };
+    if (hasPrefix(deviceUncPrefix) || hasPrefix(extendedUncPrefix)) {
+        work = path(GHC_PLATFORM_LITERAL("\\\\") + work._path.substr(deviceUncPrefix.length()), path::native_format);
+    }
+#endif
     path result;
 
     auto fs = status(work, ec);

@@ -2945,6 +2945,14 @@ TEST_CASE("Windows: path namespace handling", "[filesystem][path][fs.path.win.na
         auto p2 = fs::canonical(p, ec);
         CHECK(!ec);
         CHECK(p2 == p);
+
+        auto p3 = fs::canonical(R"(\\.\UNC\localhost\c$\Windows)", ec);
+        CHECK(!ec);
+        CHECK(p3 == p);
+
+        auto p4 = fs::canonical(R"(\\?\UNC\localhost\c$\Windows)", ec);
+        CHECK(!ec);
+        CHECK(p4 == p);
     }
     
     struct TestInfo
