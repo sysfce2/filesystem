@@ -3951,7 +3951,15 @@ GHC_INLINE bool copy_file(const path& from, const path& to, copy_options options
     bool overwrite = false;
     ec.clear();
     if (!is_regular_file(sf)) {
-        ec = tecf;
+        if (tecf) {
+            ec = tecf;
+        }
+        else if (is_directory(sf)) {
+            ec = detail::make_error_code(detail::portable_error::is_a_directory);
+        }
+        else {
+            ec = detail::make_error_code(detail::portable_error::invalid_argument);
+        }
         return false;
     }
     if (exists(st)) {

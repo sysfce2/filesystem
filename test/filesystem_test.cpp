@@ -1825,6 +1825,24 @@ TEST_CASE("fs.op.copy_file - copy_file", "[filesystem][operations][fs.op.copy_fi
     CHECK_NOTHROW(fs::copy_file("foobar", "foobar2", ec));
     CHECK(ec);
     CHECK(!fs::exists("foobar"));
+    CHECK(!fs::exists("foobar2"));
+
+    fs::create_directory("source_dir");
+    CHECK_FALSE(fs::copy_file("source_dir", "dir_copy", ec));
+    CHECK(ec);
+    CHECK_FALSE(fs::exists("dir_copy"));
+    CHECK_THROWS_AS(fs::copy_file("source_dir", "dir_copy"), fs::filesystem_error);
+    CHECK_FALSE(fs::exists("dir_copy"));
+
+#if !defined(GHC_OS_WINDOWS) && !defined(GHC_OS_WEB)
+    REQUIRE(::mkfifo("source_fifo", 0644) == 0);
+    CHECK_FALSE(fs::copy_file("source_fifo", "fifo_copy", ec));
+    CHECK(ec);
+    CHECK_FALSE(fs::exists("fifo_copy"));
+    CHECK_THROWS_AS(fs::copy_file("source_fifo", "fifo_copy"), fs::filesystem_error);
+    CHECK_FALSE(fs::exists("fifo_copy"));
+#endif
+
     fs::path file1("temp1.txt");
     fs::path file2("temp2.txt");
     generateFile(file1, 200);
@@ -1838,6 +1856,10 @@ TEST_CASE("fs.op.copy_file - copy_file", "[filesystem][operations][fs.op.copy_fi
     CHECK((fs::status(file2).permissions() & fs::perms::owner_write) != fs::perms::owner_write);
     CHECK_NOTHROW(fs::permissions(file1, allWrite, fs::perm_options::add));
     CHECK_NOTHROW(fs::permissions(file2, allWrite, fs::perm_options::add));
+
+    ec = std::make_error_code(std::errc::invalid_argument);
+    CHECK(fs::copy_file("foo", "bar3", ec));
+    CHECK(!ec);
 }
 
 TEST_CASE("fs.op.copy_symlink - copy_symlink", "[filesystem][operations][fs.op.copy_symlink]")
