@@ -669,6 +669,8 @@ to the expected behavior.
   `last_write_time()` now consistently follows symlinks.
 * Fix for [#208](https://github.com/gulrak/filesystem/issues/208), filesystem
   metadata now preserves subsecond modification times.
+* Fix for [#178](https://github.com/gulrak/filesystem/issues/178), recursive
+  iteration no longer resolves symlinks unless requested.
 * Fix for [#185](https://github.com/gulrak/filesystem/issues/185),
   `lexically_normal()` now preserves unresolved parent components in relative
   paths.
