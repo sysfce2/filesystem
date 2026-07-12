@@ -2568,6 +2568,24 @@ TEST_CASE("fs.op.last_write_time - last_write_time", "[filesystem][operations][f
     CHECK_NOTHROW(fs::last_write_time("foo", nt, ec));
     CHECK(std::abs(std::chrono::duration_cast<std::chrono::seconds>(fs::last_write_time("foo") - nt).count()) < 1);
     CHECK(!ec);
+    if (is_symlink_creation_supported()) {
+#if !defined(GHC_OS_WINDOWS) && !defined(GHC_OS_WEB)
+        struct ::stat linkStatBefore;
+        REQUIRE(::lstat("foo2", &linkStatBefore) == 0);
+#endif
+        nt = timeFromString("2015-10-21T04:28:00");
+        CHECK_NOTHROW(fs::last_write_time("foo2", nt));
+        CHECK(std::abs(std::chrono::duration_cast<std::chrono::seconds>(fs::last_write_time("foo") - nt).count()) < 1);
+        nt = timeFromString("2015-10-21T04:27:00");
+        CHECK_NOTHROW(fs::last_write_time("foo2", nt, ec));
+        CHECK(!ec);
+        CHECK(std::abs(std::chrono::duration_cast<std::chrono::seconds>(fs::last_write_time("foo") - nt).count()) < 1);
+#if !defined(GHC_OS_WINDOWS) && !defined(GHC_OS_WEB)
+        struct ::stat linkStatAfter;
+        REQUIRE(::lstat("foo2", &linkStatAfter) == 0);
+        CHECK(linkStatAfter.st_mtime == linkStatBefore.st_mtime);
+#endif
+    }
     CHECK_THROWS_AS(fs::last_write_time("bar", nt), fs::filesystem_error);
     CHECK_NOTHROW(fs::last_write_time("bar", nt, ec));
     CHECK(ec);

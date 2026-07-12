@@ -4713,9 +4713,9 @@ GHC_INLINE void last_write_time(const path& p, file_time_type new_time, std::err
     times[1].tv_sec = static_cast<decltype(times[1].tv_sec)>(std::chrono::duration_cast<std::chrono::seconds>(d).count());
     times[1].tv_nsec = static_cast<decltype(times[1].tv_nsec)>(std::chrono::duration_cast<std::chrono::nanoseconds>(d).count() % 1000000000);
 #if defined(__ANDROID_API__) && __ANDROID_API__ < 12
-    if (syscall(__NR_utimensat, AT_FDCWD, p.c_str(), times, AT_SYMLINK_NOFOLLOW) != 0) {
+    if (syscall(__NR_utimensat, AT_FDCWD, p.c_str(), times, 0) != 0) {
 #else
-    if (::utimensat((int)AT_FDCWD, p.c_str(), times, AT_SYMLINK_NOFOLLOW) != 0) {
+    if (::utimensat((int)AT_FDCWD, p.c_str(), times, 0) != 0) {
 #endif
         ec = detail::make_system_error();
     }
