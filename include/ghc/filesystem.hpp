@@ -1910,12 +1910,15 @@ template <typename ErrorNumber>
 GHC_INLINE std::string systemErrorText(ErrorNumber code = 0)
 {
 #if defined(GHC_OS_WINDOWS)
-    LPVOID msgBuf;
+    LPWSTR msgBuf = nullptr;
     DWORD dw = code ? static_cast<DWORD>(code) : ::GetLastError();
-    FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPWSTR)&msgBuf, 0, NULL);
-    std::string msg = toUtf8(std::wstring((LPWSTR)msgBuf));
-    LocalFree(msgBuf);
-    return msg;
+    DWORD length = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, dw, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPWSTR>(&msgBuf), 0, NULL);
+    if (length != 0 && msgBuf != nullptr) {
+        std::string msg = toUtf8(std::wstring(msgBuf, length));
+        LocalFree(msgBuf);
+        return msg;
+    }
+    return "Unknown system error " + std::to_string(dw);
 #else
     char buffer[512];
     return strerror_adapter(strerror_r(code ? code : errno, buffer, sizeof(buffer)), buffer);

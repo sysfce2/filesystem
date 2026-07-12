@@ -1234,6 +1234,13 @@ TEST_CASE("fs.class.filesystem_error - class filesystem_error", "[filesystem][fi
     CHECK(!std::string(fse.what()).empty());
     CHECK(fse.path1() == "foo/bar");
     CHECK(fse.path2() == "some/other");
+#if defined(GHC_OS_WINDOWS) && !defined(USE_STD_FS)
+    CHECK_FALSE(fs::detail::systemErrorText(ERROR_FILE_NOT_FOUND).empty());
+    const DWORD unknownError = 0xffffffffu;
+    const auto unknownErrorText = fs::detail::systemErrorText(unknownError);
+    CHECK_FALSE(unknownErrorText.empty());
+    CHECK(unknownErrorText.find(std::to_string(unknownError)) != std::string::npos);
+#endif
 }
 
 static constexpr fs::perms constExprOwnerAll()
