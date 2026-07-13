@@ -669,6 +669,8 @@ to the expected behavior.
   `last_write_time()` now consistently follows symlinks.
 * Fix for [#208](https://github.com/gulrak/filesystem/issues/208), filesystem
   metadata now preserves subsecond modification times.
+* Fix for [#209](https://github.com/gulrak/filesystem/issues/209), malformed
+  UTF-16 no longer drops subsequent valid code units.
 * Fix for [#178](https://github.com/gulrak/filesystem/issues/178), recursive
   iteration no longer resolves symlinks unless requested.
 * Fix for [#185](https://github.com/gulrak/filesystem/issues/185),

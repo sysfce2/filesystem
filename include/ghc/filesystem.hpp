@@ -1656,21 +1656,27 @@ inline std::string toUtf8(const strT& unicodeString)
     std::string result;
     for (auto iter = unicodeString.begin(); iter != unicodeString.end(); ++iter) {
         char32_t c = *iter;
-        if (is_surrogate(c)) {
-            ++iter;
-            if (iter != unicodeString.end() && is_high_surrogate(c) && is_low_surrogate(*iter)) {
-                appendUTF8(result, (char32_t(c) << 10) + *iter - 0x35fdc00);
+        if (is_high_surrogate(c)) {
+            auto next = iter;
+            ++next;
+            if (next != unicodeString.end() && is_low_surrogate(*next)) {
+                appendUTF8(result, (char32_t(c) << 10) + *next - 0x35fdc00);
+                iter = next;
             }
             else {
 #ifdef GHC_RAISE_UNICODE_ERRORS
                 throw filesystem_error("Illegal code point for unicode character.", result, std::make_error_code(std::errc::illegal_byte_sequence));
 #else
                 appendUTF8(result, 0xfffd);
-                if (iter == unicodeString.end()) {
-                    break;
-                }
 #endif
             }
+        }
+        else if (is_low_surrogate(c)) {
+#ifdef GHC_RAISE_UNICODE_ERRORS
+            throw filesystem_error("Illegal code point for unicode character.", result, std::make_error_code(std::errc::illegal_byte_sequence));
+#else
+            appendUTF8(result, 0xfffd);
+#endif
         }
         else {
             appendUTF8(result, c);

@@ -355,11 +355,23 @@ TEST_CASE("fs::detail::toUtf8", "[filesystem][fs.detail.utf8]")
 {
     std::string t;
     CHECK(std::string("\xc3\xa4/\xe2\x82\xac\xf0\x9d\x84\x9e") == fs::detail::toUtf8(std::u16string(u"\u00E4/\u20AC\U0001D11E")));
+    const std::u16string highThenAscii{0xd800, u'A'};
+    const std::u16string lowThenAscii{0xdc00, u'B'};
+    const std::u16string malformedThenPair{0xd800, 0xd834, 0xdd1e, u'C'};
+    const std::u16string pairThenMalformed{0xd834, 0xdd1e, 0xdc00, u'D'};
 #ifdef GHC_RAISE_UNICODE_ERRORS
     CHECK_THROWS_AS(fs::detail::toUtf8(std::u16string(1, 0xd800)), fs::filesystem_error);
+    CHECK_THROWS_AS(fs::detail::toUtf8(highThenAscii), fs::filesystem_error);
+    CHECK_THROWS_AS(fs::detail::toUtf8(lowThenAscii), fs::filesystem_error);
+    CHECK_THROWS_AS(fs::detail::toUtf8(malformedThenPair), fs::filesystem_error);
+    CHECK_THROWS_AS(fs::detail::toUtf8(pairThenMalformed), fs::filesystem_error);
     CHECK_THROWS_AS(fs::detail::appendUTF8(t, 0x200000), fs::filesystem_error);
 #else
     CHECK(std::string("\xEF\xBF\xBD") == fs::detail::toUtf8(std::u16string(1, 0xd800)));
+    CHECK(std::string("\xEF\xBF\xBD" "A") == fs::detail::toUtf8(highThenAscii));
+    CHECK(std::string("\xEF\xBF\xBD" "B") == fs::detail::toUtf8(lowThenAscii));
+    CHECK(std::string("\xEF\xBF\xBD\xF0\x9D\x84\x9E" "C") == fs::detail::toUtf8(malformedThenPair));
+    CHECK(std::string("\xF0\x9D\x84\x9E\xEF\xBF\xBD" "D") == fs::detail::toUtf8(pairThenMalformed));
     fs::detail::appendUTF8(t, 0x200000);
     CHECK(std::string("\xEF\xBF\xBD") == t);
 #endif
