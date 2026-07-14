@@ -2102,6 +2102,17 @@ TEST_CASE("fs.op.equivalent - equivalent", "[filesystem][operations][fs.op.equiv
         CHECK(fs::equivalent("foo", "foo2", ec));
         CHECK(!ec);
     }
+    fs::create_hard_link("foo", "foo-hard-link");
+    CHECK(fs::equivalent("foo", "foo-hard-link"));
+    generateFile("foo-hard-link", 4321);
+    CHECK(fs::file_size("foo") == 4321);
+    CHECK(fs::equivalent("foo", "foo-hard-link"));
+    std::error_code mutationEc(42, std::system_category());
+    CHECK(fs::equivalent("foo", "foo-hard-link", mutationEc));
+    CHECK(!mutationEc);
+    if (is_symlink_creation_supported()) {
+        CHECK(fs::equivalent("foo", "foo2"));
+    }
 #ifdef TEST_LWG_2937_BEHAVIOUR
     INFO("This test expects LWG #2937 result conformance.");
     std::error_code ec;

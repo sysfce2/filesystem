@@ -4392,8 +4392,7 @@ GHC_INLINE bool equivalent(const path& p1, const path& p2, std::error_code& ec) 
         ec = detail::make_system_error();
         return false;
     }
-    return inf1.ftLastWriteTime.dwLowDateTime == inf2.ftLastWriteTime.dwLowDateTime && inf1.ftLastWriteTime.dwHighDateTime == inf2.ftLastWriteTime.dwHighDateTime && inf1.nFileIndexHigh == inf2.nFileIndexHigh && inf1.nFileIndexLow == inf2.nFileIndexLow &&
-           inf1.nFileSizeHigh == inf2.nFileSizeHigh && inf1.nFileSizeLow == inf2.nFileSizeLow && inf1.dwVolumeSerialNumber == inf2.dwVolumeSerialNumber;
+    return inf1.nFileIndexHigh == inf2.nFileIndexHigh && inf1.nFileIndexLow == inf2.nFileIndexLow && inf1.dwVolumeSerialNumber == inf2.dwVolumeSerialNumber;
 #else
     struct ::stat s1, s2;
     auto rc1 = ::stat(p1.c_str(), &s1);
@@ -4409,7 +4408,7 @@ GHC_INLINE bool equivalent(const path& p1, const path& p2, std::error_code& ec) 
 #endif
         return false;
     }
-    return s1.st_dev == s2.st_dev && s1.st_ino == s2.st_ino && s1.st_size == s2.st_size && s1.st_mtime == s2.st_mtime;
+    return s1.st_dev == s2.st_dev && s1.st_ino == s2.st_ino;
 #endif
 }
 
