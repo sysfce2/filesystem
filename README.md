@@ -4,7 +4,7 @@
 [![Build Status](https://ci.appveyor.com/api/projects/status/t07wp3k2cddo0hpo/branch/master?svg=true)](https://ci.appveyor.com/project/gulrak/filesystem)
 [![Build Status](https://api.cirrus-ci.com/github/gulrak/filesystem.svg?branch=master)](https://cirrus-ci.com/github/gulrak/filesystem)
 [![Coverage Status](https://coveralls.io/repos/github/gulrak/filesystem/badge.svg?branch=master)](https://coveralls.io/github/gulrak/filesystem?branch=master)
-[![Latest Release Tag](https://img.shields.io/github/tag/gulrak/filesystem.svg)](https://github.com/gulrak/filesystem/tree/v1.5.14)
+[![Latest Release Tag](https://img.shields.io/github/tag/gulrak/filesystem.svg)](https://github.com/gulrak/filesystem/tree/v1.5.16)
 <!-- [![Build Status](https://cloud.drone.io/api/badges/gulrak/filesystem/status.svg?ref=refs/heads/master)](https://cloud.drone.io/gulrak/filesystem) -->
 
 
@@ -40,17 +40,19 @@
 # Filesystem
 
 This is a header-only single-file `std::filesystem` compatible helper library,
-based on the C++17 and C++20 specs, but implemented for C++11, C++14, C++17 or C++20
-(tightly following  the C++17 standard with very few documented exceptions). It is currently tested on
-macOS 10.12/10.14/10.15/11.6, Windows 10, Ubuntu 18.04, Ubuntu 20.04, CentOS 7, CentOS 8, FreeBSD 12,
-Alpine ARM/ARM64 Linux and Solaris 10 but should work on other systems too, as long as you have
-at least a C++11 compatible compiler. It should work with Android NDK, Emscripten and I even
-had reports of it being used on iOS (within sandboxing constraints) and with v1.5.6 there
-is experimental support for QNX. The support of Android NDK, Emscripten, QNX, and since 1.5.14
-GNU/Hurd and Haiku is not backed up by automated testing but PRs and bug reports are welcome
-for those too and they are reported to work.
-It is of course in its own namespace `ghc::filesystem` to not interfere with a regular `std::filesystem`
-should you use it in a mixed C++17 environment (which is possible).
+based on the C++17 and C++20 specifications, but implemented for C++11, C++14,
+C++17, and C++20. It closely follows the C++17 standard with a few documented
+exceptions.
+
+Automated CI currently covers macOS, Windows, Ubuntu, Rocky Linux, and FreeBSD,
+including both current and legacy compiler toolchains. The library has also
+been reported to work on Android, iOS, Emscripten, QNX, GNU/Hurd, Haiku,
+Solaris, and other Unix-like systems, but those platforms are not continuously
+tested. PRs that allow testing any of those are welcome.
+
+It is of course in its own namespace `ghc::filesystem` to not interfere with a
+regular `std::filesystem` should you use it in a mixed C++17 environment
+(which is possible).
 
 *Test coverage is well above 90%, and starting with v1.3.6 and in v1.5.0
 more time was invested in benchmarking and optimizing parts of the library. I'll try
@@ -90,39 +92,42 @@ to do with Haskell**, sorry for the name clash).
 
 ## Platforms
 
-`ghc::filesystem` is developed on macOS but CI tested on macOS, Windows,
-various Linux Distributions, FreeBSD and starting with v1.5.12 on Solaris.
-It should work on any of these with a C++11-capable  compiler. Also there are some
-checks to hopefully better work on Android, but  as I currently don't test with the
-Android NDK, I wouldn't call it a  supported platform yet, same is valid for using
-it with Emscripten. It is now  part of the detected platforms, I fixed the obvious
-issues and ran some tests with  it, so it should be fine. All in all, I don't see it
-replacing `std::filesystem` where full C++17 or C++20 is available, it doesn't try
-to be a "better" `std::filesystem`, just an almost drop-in if you can't use it
-(with the exception  of the UTF-8 preference).
+`ghc::filesystem` is developed on macOS and continuously tested using GitHub
+Actions, AppVeyor, and Cirrus CI. The current automated matrix includes:
+
+* macOS 14 and 15 on Apple Silicon with AppleClang
+* Windows with Visual Studio 2015, 2017, 2019, and 2022 toolchains, including
+  the MSVC v142 toolset
+* Windows MSYS2 with MinGW64 GCC, UCRT64 GCC, and Clang64
+* Ubuntu 22.04 and 24.04 with GCC 11-13 and Clang 15/18
+* Legacy Docker builds with GCC 5-8 and Clang 6-9
+* Rocky Linux 8 and 9
+* FreeBSD 14
+
+Modern CI jobs exercise C++11, C++17, and C++20 where supported. Platforms not
+listed above may still work, but are not covered by the current automated test
+matrix.
+
+People use it on Android, iOS, Emscripten, QNX, GNU/Hurd, Haiku, Solaris, and
+other Unix-like systems but continous CI coverage is missing.
+
+It _should_ work on any Windows or POSIX platform with a C++11-capable  compiler. 
+All in all, I don't see it replacing `std::filesystem` where full C++17 or C++20
+is available, it doesn't try to be a "better" `std::filesystem`, just an almost
+drop-in if you can't use it (with the exception  of the UTF-8 preference).
 
 :information_source: **Important:** _This implementation is following the ["UTF-8 Everywhere" philosophy](https://utf8everywhere.org/) in that all
 `std::string` instances will be interpreted the same as `std::u8string` encoding
 wise and as being in UTF-8. The `std::u16string` will be seen as UTF-16. See *Differences in API*
 for more information._
 
-Unit tests are currently run with:
-
-* macOS 10.12: Xcode 9.2 (clang-900.0.39.2), GCC 9.2, Clang 9.0, macOS 10.13: Xcode 10.1, macOS 10.14: Xcode 11.2, macOS 10.15: Xcode 11.6, Xcode 12.4
-* Windows: Visual Studio 2017, Visual Studio 2015, Visual Studio 2019, MinGW GCC 6.3 (Win32), GCC 7.2 (Win64), Cygwin GCC 10.2 (no CI yet)
-* Linux (Ubuntu): GCC (5.5, 6.5, 7.4, 8.3, 9.2), Clang (5.0, 6.0, 7.1, 8.0, 9.0)
-* ~~Linux (Alpine ARM/ARM64): GCC 9.2.0~~ (The Drone build scripts stopped working,
-  as they where a contribution, I couldn't figure out what went wrong, any help appreciated.)
-* FreeBSD: Clang 8.0
-* Solaris: GCC 5.5 
-
 
 ## Tests
 
 The header comes with a set of unit-tests and uses [CMake](https://cmake.org/)
 as a build tool and [Catch2](https://github.com/catchorg/Catch2) as test framework.
-All tests are registered with in CMake, so the [ctest](https://cmake.org/cmake/help/latest/manual/ctest.1.html)
-commando can be used to run the tests. 
+All tests are registered with CMake, so the [ctest](https://cmake.org/cmake/help/latest/manual/ctest.1.html)
+command can be used to run the tests. 
 
 All tests against this implementation should succeed, depending on your environment
 it might be that there are some warnings, e.g. if you have no rights to create
@@ -154,8 +159,8 @@ in the standard, and there might be issues in these implementations too.
 
 ### Downloads
 
-The latest release version is [v1.5.14](https://github.com/gulrak/filesystem/tree/v1.5.14) and
-source archives can be found [here](https://github.com/gulrak/filesystem/releases/tag/v1.5.14).
+The latest release version is [v1.5.16](https://github.com/gulrak/filesystem/tree/v1.5.16) and
+source archives can be found [here](https://github.com/gulrak/filesystem/releases/tag/v1.5.16).
 
 The latest pre-native-backend version is [v1.4.0](https://github.com/gulrak/filesystem/tree/v1.4.0) and
 source archives can be found [here](https://github.com/gulrak/filesystem/releases/tag/v1.4.0).
@@ -648,7 +653,7 @@ to the expected behavior.
 
 ## Release Notes
 
-### v1.5.15 (wip)
+### v1.5.16
 
 * Fix for [#203](https://github.com/gulrak/filesystem/issues/203), directory
   iteration and `proximate()` are available in builds without exception
